@@ -2,7 +2,7 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from pathlib import Path
-
+import undetected_chromedriver as uc
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -21,3 +21,10 @@ class WebDriver():
             driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
         
         return driver
+
+    def get_undetected_chrome_driver(self):
+        try:
+            driver = uc.Chrome()
+            return driver
+        except Exception as e:
+            print(e)

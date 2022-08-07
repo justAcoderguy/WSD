@@ -56,6 +56,26 @@ class Pinnacle:
 
         return updated_matches
 
+    def database_insert(self, data):
+        table_name = "pinnacle"
+        create_script = ''' CREATE TABLE IF NOT EXISTS pinnacle (
+                                            id          serial PRIMARY KEY,
+                                            home        varchar(40) NOT NULL,
+                                            away        varchar(40) NOT NULL,
+                                            H           real NOT NULL,
+                                            D           real NOT NULL,
+                                            A           real NOT NULL) '''
+        insert_script  = 'INSERT INTO pinnacle (home, away, H, D, A) \
+                            VALUES (%s, %s, %s, %s, %s)'
+        insert_values = []
+        for match in data:
+            insert_values.append((
+                match['home_team'], match['away_team'], match['H'], match['D'], match['A']))
+        # Calling Database function
+        Database().insert_data(
+            table_name, create_script, insert_script, insert_values
+        )
+
     def run(self):
         try:
             content = self._make_request()
@@ -77,6 +97,6 @@ if __name__ == "__main__":
 
     try:
         # Storing to database
-        Database().insert_data(data)
+        obj.database_insert(data)
     except Exception as e:
         print(e)

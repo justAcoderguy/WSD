@@ -15,8 +15,7 @@ class Database:
         self.port_id = 5432
         self.conn = None
 
-
-    def insert_data(self, data):
+    def insert_data(self, table_name, create_script, insert_script, insert_values):
         try:
             with psycopg2.connect(
                         host = self.hostname,
@@ -27,32 +26,17 @@ class Database:
 
                 with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
 
-                    cur.execute('DROP TABLE IF EXISTS pinnacle')
-
-                    create_script = ''' CREATE TABLE IF NOT EXISTS pinnacle (
-                                            id      serial PRIMARY KEY,
-                                            home    varchar(40) NOT NULL,
-                                            away    varchar(40) NOT NULL,
-                                            H       real NOT NULL,
-                                            D       real NOT NULL,
-                                            A       real NOT NULL) '''
+                    cur.execute(f'DROP TABLE IF EXISTS {table_name}')
                     cur.execute(create_script)
-
-                    insert_script  = 'INSERT INTO pinnacle (home, away, H, D, A) VALUES (%s, %s, %s, %s, %s)'
-                    # print(data)
-                    insert_values = []
-                    for match in data:
-                        insert_values.append((match['home_team'], match['away_team'], match['H'], match['D'], match['A']))
                     for record in insert_values:
                         cur.execute(insert_script, record)
                     conn.commit()
 
-
-                    cur.execute('SELECT * FROM pinnacle')
+                    cur.execute(f'SELECT * FROM {table_name}')
                     print(cur.fetchall())
-                    
+
         except Exception as error:
-            print(error)
+            print(error, "error")
         finally:
             if conn is not None:
                 conn.close()
