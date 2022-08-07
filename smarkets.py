@@ -1,4 +1,3 @@
-from unicodedata import bidirectional
 from selenium.webdriver.common.by import By
 import time
 from db import Database
